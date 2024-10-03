@@ -23,7 +23,13 @@ class Property extends Model
         'slug',
         'description',
         'price',
+        'price_after_discount',
+        'installment_amount',
+        'bathroom',
+        'bedroom',
+        'area',
         'status',
+        'feature',
         'furnished',
     ];
 
@@ -54,6 +60,13 @@ class Property extends Model
         return $this->belongsTo(User::class);
     }
     /**
+     * Get the user that owns the property.
+     */
+    public function address()
+    {
+        return $this->hasOne(Address::class);
+    }
+    /**
      * Get the category that owns the property.
      */
     public function category()
@@ -68,17 +81,26 @@ class Property extends Model
         return $this->belongsTo(PropertyType::class, 'type_id');
     }
     /**
-     * Get the property Images that owns the property.
+     * Get the benefits that owns the property.
      */
-    public function propertyImages(){
-        return $this->hasMany(PropertyImage::class);
+    public function benefits()
+    {
+        return $this->belongsToMany(Benefit::class, 'property_benefits');
     }
     /**
-     * Get the property Attributes that owns the property.
+     * Get the property Images that owns the property.
      */
-    public function attributes(){
-        return $this->hasMany(Attribute::class);
+    public function propertyImages()
+    {
+        return $this->hasMany(PropertyImage::class);
     }
+   
+    
 
+    // Override on model binding for give property using slug
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 
 }

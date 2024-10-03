@@ -1,8 +1,9 @@
 <?php
 
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Auth\SocialLoginController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\PropertyController;
 
 
 require __DIR__ . '/auth.php';
@@ -23,7 +24,7 @@ Route::group([
 
     //--------------------------------/* HOME ROUTE */--------------------------------
     Route::get('/', function () {
-        return view('front.index');
+        // return view('front.index');
     })->name('front.welcome');
 
     //--------------------------------/* PROPERTIES ROUTE */--------------------------------
@@ -32,10 +33,7 @@ Route::group([
     })->name('front.properties');
 
     //--------------------------------/* PROPERTY-DETILES ROUTE */--------------------------------
-    Route::get('/property-detiles', function () {
-        return view('front.property-detiles');
-    })->name('front.property-detiles');
-
+    Route::get('/property-detiles/{property}',[PropertyController::class,'show'])->name('front.property-detiles');
 });
 
 /*
@@ -48,25 +46,18 @@ Route::group([
 */
 Route::group(
     [
-        'prefix' => 'admin'
-    ]
-    ,
+        'prefix' => 'admin',
+    ],
     function () {
 
+        //--------------------------------/* DASHBOARD ROUTE */--------------------------------
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('admin.dashboard');
+
         //--------------------------------/* PROPERTY ROUTES */--------------------------------
-        Route::group([
-            'prefix' => 'property'
-        ], function () {
-
-            // Create Property
-            Route::get('/create', function () {
-                return view('admin.property.create');
-            });
-
-        });
+        Route::resource('/properties', PropertyController::class);
 
     }
 );
 
-
-
+Route::get('auth/{provider}/redirect', [SocialLoginController::class, 'redirect'])->name('auth.socialite.redirect');
+Route::get('auth/{provider}/callback', [SocialLoginController::class, 'callback'])->name('auth.socialite.callback');
